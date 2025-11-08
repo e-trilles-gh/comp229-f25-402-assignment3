@@ -5,15 +5,8 @@
   "license": "ISC",
   "author": "Eskim Trilles",
   "type": "module",
+  "main": "server.js",
   "scripts": {
-    "dev": "npm --prefix ../client run startserver"
-  },
-  "dependencies": {
-    "bcrypt": "^6.0.0",
-    "brcypt": "^1.0.1",
-    "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.19.2",
-    "morgan": "^1.10.1"
+    "dev": "nodemon server.js"
   }
 }
