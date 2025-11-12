@@ -90,10 +90,22 @@ nav a {
     font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
 }
 
+.signup {
+    grid-column: 1 / 12;
+    grid-row: 7/6;
+}
+
+.signup > nav {
+    flex-direction: row;
+    justify-content: right;
+    gap: 1em;
+    padding-right: 1em;
+}
+
 h2 {
     text-align: left;
     grid-column: 1 / 12;
-    grid-row:6;
+    grid-row:7;
     font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
@@ -142,21 +154,26 @@ h2 {
         margin-top: 10px;
         gap: 20px;
     }
-    
+
+    .signup {
+    grid-column: 1 / 12;
+    grid-row: 2 / 4;
+    }
+
     h2 {
         text-align: left;
         grid-column: 3 / 12;
-        grid-row:2;
+        grid-row: 3;
     }
 
     .leftMessage {
         grid-column: 3 / 12;
-        grid-row:3;
+        grid-row: 4;
     }
     
     .homeGrid, .pdfContainer {
         grid-column: 3 / 12;
-        grid-row: 4 / 9;
+        grid-row: 5 / 9;
     }
 
 }
@@ -175,20 +192,25 @@ h2 {
         gap: 20px;
     }
 
-    h2 {
-        text-align: left;
-        grid-column: 1 / 12;
-        grid-row:3;
+    .signup {
+    grid-column: 1 / 12;
+    grid-row: 3 / 4;
     }
 
-    .leftMessage {
+    h2 {
+        text-align: left;
         grid-column: 1 / 12;
         grid-row:4;
     }
 
+    .leftMessage {
+        grid-column: 1 / 12;
+        grid-row: 5;
+    }
+
     .homeGrid, .pdfContainer {
         grid-column: 1 / 12;
-        grid-row: 5 / 9;
+        grid-row: 6 / 9;
     }
 
     .pdfContainer {

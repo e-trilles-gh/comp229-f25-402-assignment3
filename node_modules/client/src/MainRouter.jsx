@@ -8,6 +8,8 @@ import Projects from './components/Projects';
 import Services from './components/Services';
 import Footer from './components/Footer';
 import PdfViewer from './components/PdfViewer';
+import Signup from './components/Signup.jsx';
+import Signin from './components/Signin.jsx';
 
 const MainRouter = () => {
     return (
@@ -21,6 +23,8 @@ const MainRouter = () => {
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/pdf-view" element={<PdfViewer />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/signin" element={<Signin />} />
             </Routes>
             <Footer />
         </>

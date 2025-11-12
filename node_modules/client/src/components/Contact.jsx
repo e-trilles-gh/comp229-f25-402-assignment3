@@ -4,29 +4,35 @@ export default function Contact() {
     // initialize the useNavigate
     const navigate = useNavigate();
 
-    const submitData = (event) => {
+    const submitData = async (event) => {
         // prevent the default response on the form submission
         event.preventDefault();
 
         // captures the data from the form and stores it as key value pair in an object
         const formData = new FormData(event.target);
 
-        // iterate through all the fields to get the data
-        for (let [name, value] of formData.entries()) {
-            console.log(name, value);
+        const data = Object.fromEntries(formData.entries());
 
-            // stores the key value pair in localStorage
-            localStorage.setItem(name, value);
+        try {
+            const response = await fetch("/api/contacts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+            });
 
-            // sets the duration the data will be stored
-            const maxAge = 60 * 60 * 24;
-
-            // creates cookies available for the entire project
-            document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; path=/; max-age=" + maxAge;
+            if (response.ok) {
+            alert("Form submitted successfully!");
+            // navigate to the home page
+            navigate("/");
+            } else {
+            const err = await response.json();
+            console.error("Backend error:", err);
+            alert("Something went wrong while saving the data.");
+            }
+        } catch (error) {
+            console.error("Network error:", error);
+            alert("Unable to reach the server.");
         }
-
-        // navigate to the home page
-        navigate("/");
     }
     return (
         <>

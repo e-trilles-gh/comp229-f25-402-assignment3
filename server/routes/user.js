@@ -24,4 +24,8 @@ router.delete('/', authMiddleware, deleteAllUsers);
 router.post('/login', loginUser);
 router.get('/signout/:id', signoutUser);
 
+router.get('/test', authMiddleware, (req, res) => {
+    res.send('middleware worked!');
+});
+
 export default router;
