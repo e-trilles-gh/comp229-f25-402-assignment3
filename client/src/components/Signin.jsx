@@ -4,7 +4,7 @@ export default function Signin() {
     // initialize the useNavigate
     const navigate = useNavigate();
 
-    const submitData = async (event) => {
+    const signInUser = async (event) => {
         // prevent the default response on the form submission
         event.preventDefault();
 
@@ -14,17 +14,23 @@ export default function Signin() {
         const data = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch("/api/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
+            const loginRes = await fetch("/api/users/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: data.email, password: data.password }),
             });
 
-            if (response.ok) {
-            alert("Form submitted successfully!");
+            if (loginRes.ok) {
+                const loginData = await loginRes.json();
 
-            // Navigate to homepage
-            navigate("/");
+                localStorage.setItem("token", loginData.token);
+                localStorage.setItem("user", JSON.stringify(loginData.user));
+                alert("Signed in successfully!");
+
+                window.dispatchEvent(new Event("userLogin"));
+
+                // Navigate to homepage
+                navigate("/");
 
             } else {
                 const err = await response.json();
@@ -42,7 +48,7 @@ export default function Signin() {
             <h2>Signin</h2>
             <div className="leftMessage">Welcome to my Sign In Page</div>
             <div className="homeGrid">
-                <form onSubmit={submitData}>
+                <form onSubmit={signInUser}>
                     <fieldset>
                         <label className="block" htmlFor="email">email</label>
                         <input type="email" id="email" name="email" required></input>

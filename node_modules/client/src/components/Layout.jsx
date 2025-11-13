@@ -6,8 +6,21 @@ export default function Layout() {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) setUser(JSON.parse(storedUser));
+        const loadUser = () => {
+           const storedUser = localStorage.getItem("user");
+            setUser(storedUser ? JSON.parse(storedUser) : null); 
+        };
+
+        loadUser();
+
+        window.addEventListener("userLogin", loadUser);
+        window.addEventListener("userLogout", loadUser);
+        
+        return () => {
+            window.removeEventListener("userLogin", loadUser);
+            window.removeEventListener("userLogout", loadUser);
+            window.removeEventListener("storage", loadUser);
+        };
     }, []);
 
     const handleLogout = async () => {
@@ -27,6 +40,9 @@ export default function Layout() {
             const err = await response.json();
             console.error("Error signing out:", err);
             }
+            localStorage.removeItem("user");
+            setUser(null);
+            window.dispatchEvent(new Event("userLogout"));
         } catch (error) {
             console.error("Network error:", error);
         }
@@ -55,7 +71,9 @@ export default function Layout() {
             <div className="signup">
                 {user ? (
                     <>
-                        <button onClick={handleLogout}>Sign Out</button>
+                        <nav>
+                            <button onClick={handleLogout}>Sign Out</button>
+                        </nav>
                     </>
                 ) : (
                     <>

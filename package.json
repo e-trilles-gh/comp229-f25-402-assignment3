@@ -3,20 +3,20 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
-  "private": "true",
+  "private": true,
   "workspaces": [
     "client",
     "server"
   ],
   "scripts": {
     "start": "npm-run-all --parallel start:client start:server",
-    "start:server": "npm --prefix ./server run dev",
-    "start:client": "npm --prefix ./client run dev"
+    "start:server": "npm --prefix server run dev",
+    "start:client": "npm --prefix client run dev"
   },
   "keywords": [],
   "author": "Eskim Trilles",
   "license": "ISC",
-  "type": "module",
+  "type": "commonjs",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "bootstrap": "^5.3.8",
@@ -37,6 +37,8 @@
     "@eslint/js": "^9.36.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.0.4",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",

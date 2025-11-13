@@ -156,8 +156,8 @@ h2 {
     }
 
     .signup {
-    grid-column: 1 / 12;
-    grid-row: 2 / 4;
+    grid-column: 3 / 12;
+    grid-row: 2 / 3;
     }
 
     h2 {

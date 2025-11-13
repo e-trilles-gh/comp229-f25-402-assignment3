@@ -47,7 +47,6 @@ export default function Signup() {
             description: data.qualificationsDescription
         }
 
-
         try {
             const userRes = await fetch("/api/users", {
                 method: "POST",
@@ -66,24 +65,24 @@ export default function Signup() {
             fetch("/api/contacts", {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(contactData),
             }),
             fetch("/api/projects", {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(projectData),
             }),
             fetch("/api/qualifications", {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(qualificationData),
             }),
