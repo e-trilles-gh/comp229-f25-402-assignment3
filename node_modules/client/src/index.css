@@ -83,7 +83,7 @@ nav a {
 
 .homeGrid, .pdfContainer {
     grid-column: 1 / 12;
-    grid-row: 8 / 10;
+    grid-row: 9 / 10;
 }
 
 .homeGrid > h3, h4, p, dt, dd, li {
@@ -127,12 +127,33 @@ h2 {
 .imageLogo {
     width: 150px;
 }
+.tableList {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+    padding: 0.5em;
+}
 
+thead > tr {
+    background-color: aqua;
+    text-align: center;
+}
+
+tr {
+    background-color: aquamarine;
+}
 .footer, footer {
     grid-column: 1 / 12;
     grid-row: -1;
     font-family: monospace;
     font-size: 1em;
+}
+
+.centerDiv {
+    grid-column: 1/12;
+}
+
+form {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 @media screen and (min-width: 680px) {
@@ -173,7 +194,7 @@ h2 {
     
     .homeGrid, .pdfContainer {
         grid-column: 3 / 12;
-        grid-row: 5 / 9;
+        grid-row: 6 / 9;
     }
 
 }
@@ -210,7 +231,7 @@ h2 {
 
     .homeGrid, .pdfContainer {
         grid-column: 1 / 12;
-        grid-row: 6 / 9;
+        grid-row: 7 / 9;
     }
 
     .pdfContainer {
