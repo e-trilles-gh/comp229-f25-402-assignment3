@@ -4,9 +4,14 @@ const qualificationSchema = new mongoose.Schema({
     title: String,
     firstname: String,
     lastname: String,
-    email:	String,
+    email: String,
     completion: Date,
-    description: String
+    description: String,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    }
 });
 
 export default mongoose.model('Qualification', qualificationSchema);

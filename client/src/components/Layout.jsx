@@ -1,21 +1,23 @@
 import { Link } from "react-router-dom";
 import logo from "/images/logo.png";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Layout() {
     const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadUser = () => {
-           const storedUser = localStorage.getItem("user");
-            setUser(storedUser ? JSON.parse(storedUser) : null); 
+            const storedUser = localStorage.getItem("user");
+            setUser(storedUser ? JSON.parse(storedUser) : null);
         };
 
         loadUser();
 
         window.addEventListener("userLogin", loadUser);
         window.addEventListener("userLogout", loadUser);
-        
+
         return () => {
             window.removeEventListener("userLogin", loadUser);
             window.removeEventListener("userLogout", loadUser);
@@ -24,35 +26,50 @@ export default function Layout() {
     }, []);
 
     const handleLogout = async () => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!user) return;
-
-        try {
-            // Call backend signout route
-            const response = await fetch(`/api/signout/${user._id}`, {
-            method: "GET",
-            credentials: "include", // if using cookies/sessions
-            });
-
-            if (response.ok) {
-            console.log("User signed out on server");
-            } else {
-            const err = await response.json();
-            console.error("Error signing out:", err);
-            }
-            localStorage.removeItem("user");
-            setUser(null);
-            window.dispatchEvent(new Event("userLogout"));
-        } catch (error) {
-            console.error("Network error:", error);
-        }
-
         // Clear localStorage and state on frontend
         localStorage.removeItem("user");
+        localStorage.removeItem("token");
         setUser(null);
+        window.dispatchEvent(new Event("userLogout"));
+        navigate("/");
     };
 
-    return(
+    const handleDeleteUser = async () => {
+        if (!user) return;
+        if (!window.confirm("Are you sure you want to delete your account?")) return;
+
+        const token = localStorage.getItem("token");
+
+        try {
+            const res = await fetch(`/api/users/${user._id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                console.error("Delete failed:", err);
+                alert("Failed to delete account.");
+                return;
+            }
+
+            alert("Account deleted successfully.");
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            setUser(null);
+            window.dispatchEvent(new Event("userLogout"));
+            navigate("/");
+
+        } catch (error) {
+            console.error("Network error:", error);
+            alert("Something went wrong.");
+        }
+    };
+
+
+    return (
         <>
             <h1>My Portfolio</h1>
             <div className="logoContainer">
@@ -73,6 +90,7 @@ export default function Layout() {
                     <>
                         <nav>
                             <button onClick={handleLogout}>Sign Out</button>
+                            <button onClick={handleDeleteUser}>Delete {user.name}</button>
                         </nav>
                     </>
                 ) : (

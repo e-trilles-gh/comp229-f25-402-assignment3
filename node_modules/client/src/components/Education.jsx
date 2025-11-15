@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 export default function Education() {
@@ -14,35 +15,66 @@ export default function Education() {
         description: ""
     });
 
+    const startEditing = (item) => {
+        setEditingId(item._id);
+        setFormData({
+            title: item.title,
+            firstname: item.firstname,
+            lastname: item.lastname,
+            email: item.email,
+            completion: item.completion?.split("T")[0],
+            description: item.description
+        });
+        setShowForm(true);
+    };
+
+    // initialize the useNavigate
+    const navigate = useNavigate();
+
     const handleChange = (event) => {
         setFormData({ ...formData, [event.target.name]: event.target.value });
     };
 
     const fetchQualifications = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.log("Check your credentials");
+            setQualifications([]);
+            return;
+        }
         try {
-            const token = localStorage.getItem("token");
-
             const res = await fetch("/api/qualifications", {
+                method: "GET",
                 headers: {
+                    "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 }
             });
 
             const data = await res.json();
 
-            const user = JSON.parse(localStorage.getItem("user"));
-
-            const filtered = data.filter(qualification => qualification.email === user.email);
-            setQualifications(filtered);
+            //const filtered = data.filter(qualification => qualification.email === user.email);
+            setQualifications(data);
         } catch (error) {
             console.error("message:", error);
         }
-    };
+    }
 
     useEffect(() => {
         fetchQualifications();
+
+        const handleEvent = () => fetchQualifications();
+
+        window.addEventListener("userLogin", handleEvent);
+        window.addEventListener("userLogout", handleEvent);
+
+        return () => {
+            window.removeEventListener("userLogin", handleEvent);
+            window.removeEventListener("userLogout", handleEvent);
+        }
     }, []);
-    
+
+
     const submitEducation = async (event) => {
         event.preventDefault();
 
@@ -65,6 +97,7 @@ export default function Education() {
 
             if (!res.ok) {
                 alert("Error saving data.");
+                navigate("/signup");
                 return;
             }
 
@@ -81,7 +114,6 @@ export default function Education() {
 
             setEditingId(null);
             setShowForm(false);
-
             fetchQualifications();
 
         } catch (error) {
@@ -92,13 +124,15 @@ export default function Education() {
     const deleteQualification = async (id) => {
         const token = localStorage.getItem("token");
 
-        if (!confirm("Delete this item?")) return;
+        if (!confirm("Delete this item?")) {
+            return;
+        }
 
         try {
-        const res = await fetch(`/api/qualifications/${id}`, {
-            method: "DELETE",
-            headers: { "Authorization": `Bearer ${token}` }
-        });
+            const res = await fetch(`/api/qualifications/${id}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
 
             if (res.ok) {
                 alert("Deleted!");
@@ -107,22 +141,11 @@ export default function Education() {
                 alert("Delete failed.");
             }
         } catch (err) {
-        console.error("Delete error:", err);
+            console.error("Delete error:", err);
         }
     }
 
-    const startEditing = (item) => {
-        setEditingId(item._id);
-        setFormData({
-            title: item.title,
-            firstname: item.firstname,
-            lastname: item.lastname,
-            email: item.email,
-            completion: item.completion?.split("T")[0],
-            description: item.description
-        });
-        setShowForm(true);
-    };
+
 
     return (
         <>
@@ -152,23 +175,23 @@ export default function Education() {
 
                                 <label className="block" htmlFor="completion">Completion Date:</label>
                                 <input type="date" id="completion" name="completion" value={formData.completion} onChange={handleChange} required />
-                                
+
                                 <label className="block" htmlFor="description">Description:</label>
                                 <textarea name="description" value={formData.description} onChange={handleChange} required />
                             </fieldset>
 
                             <fieldset>
-                            <button type="submit">Submit</button>
-                            <button type="button" onClick={() => setShowForm(false)}>Cancel</button>
+                                <button type="submit">Submit</button>
+                                <button type="button" onClick={() => setShowForm(false)}>Cancel</button>
                             </fieldset>
                         </form>
                     )}
                 </div>
 
                 <div>
-                    <h3>Qualifications</h3>
+                    <h3>Qualification List</h3>
                 </div>
-                    
+
                 <div>
                     {qualifications.length === 0 ? <p>No entries yet.</p> : (
                         <>
@@ -201,7 +224,7 @@ export default function Education() {
                     )}
                 </div>
             </div>
-            <div className="homeGrid">  
+            <div className="homeGrid">
                 <div>
                     <h3>Software Engineering Technology</h3>
                     <p>Centennial College</p>

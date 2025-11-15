@@ -1,86 +1,119 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
 
 export default function Signup() {
-    // initialize the useNavigate
+    const [form, setForm] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        retypePassword: ''
+    });
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const registerUser = async (event) => {
-        // prevent the default response on the form submission
-        event.preventDefault();
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm({ ...form, [name]: value });
+    };
 
-        // captures the data from the form and stores it as key value pair in an object
-        const formData = new FormData(event.target);
-        const data = Object.fromEntries(formData.entries());
-        
-        if (data.password !== data.retypePassword) {
-            alert("Passwords do not match.");
+    const handleReset = () => {
+        setForm({
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: '',
+            retypePassword: ''
+        });
+        setError('');
+    };
+
+    const registerUser = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        if (form.password !== form.retypePassword) {
+            setError('Passwords do not match.');
             return;
         }
 
-        const userData = {
-            name: `${data.firstName} ${data.lastName}`,
-            email: data.email,
-            password: data.password
-        }
-
         try {
-            const userRes = await fetch("/api/users", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(userData),
+            // Create user
+            const userRes = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: `${form.firstName} ${form.lastName}`,
+                    email: form.email,
+                    password: form.password
+                })
             });
-            const userDataResponse = await userRes.json();
-            const loginRes = await fetch("/api/users/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: data.email, password: data.password }),
-            });
-            const loginData = await loginRes.json();
-            localStorage.setItem("user", JSON.stringify(loginData.user));
-            localStorage.setItem("token", loginData.token);
 
-            if (!userRes.ok || !loginRes.ok) {
-                alert("Failed to save data.");
+            if (!userRes.ok) {
+                const err = await userRes.json();
+                setError(err.message || 'Failed to create user.');
                 return;
             }
-            window.dispatchEvent(new Event("userLogin"));
-            alert("Registration successful!");
-            navigate("/");
-        } catch (error) {
-            console.error("Message:", error);
-            alert("Registration Failed");
+
+            // Login immediately
+            const loginRes = await fetch('/api/users/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: form.email, password: form.password })
+            });
+
+            if (!loginRes.ok) {
+                const err = await loginRes.json();
+                setError(err.message || 'Login failed after signup.');
+                return;
+            }
+
+            const loginData = await loginRes.json();
+
+            // Save token and user
+            localStorage.setItem('token', loginData.token);
+            localStorage.setItem('user', JSON.stringify(loginData.user));
+
+            // Trigger Layout rerender
+            window.dispatchEvent(new Event('userLogin'));
+
+            // Navigate after successful login
+            navigate('/');
+
+        } catch (err) {
+            console.error(err);
+            setError('Network error. Please try again.');
         }
     };
+
     return (
-        <>
+        <div className="homeGrid">
             <h2>Signup</h2>
-            <div className="leftMessage">Welcome to my Signup Page</div>
-            <div className="homeGrid">
-                <form onSubmit={registerUser}>
-                    <fieldset>
-                        <legend>Personal Information</legend>
+            {error && <div style={{ color: 'red' }}>{error}</div>}
+            <form onSubmit={registerUser}>
+                <fieldset>
+                    <legend>Personal Information</legend>
+                    <label className="block" htmlFor="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" value={form.firstName} onChange={handleChange} required />
 
-                        <label className="block" htmlFor="firstName">First Name</label>
-                        <input type="text" id="firstName" name="firstName" required></input>
+                    <label className="block" htmlFor="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" value={form.lastName} onChange={handleChange} required />
 
-                        <label className="block" htmlFor="lastName">Last Name</label>
-                        <input type="text" id="lastName" name="lastName" required></input>
+                    <label className="block" htmlFor="email">Email</label>
+                    <input type="email" id="email" name="email" value={form.email} onChange={handleChange} required />
 
-                        <label className="block" htmlFor="email">Email</label>
-                        <input type="email" id="email" name="email" placeholder="sample.@gmail.com" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" required></input>
+                    <label className="block" htmlFor="password">Password</label>
+                    <input type="password" id="password" name="password" value={form.password} onChange={handleChange} required />
 
-                        <label className="block" htmlFor="password">Password</label>
-                        <input type="password" id="password" name="password" placeholder="enter your password"required></input>
-                        <input className="block" type="password" id="retypePassword" name="retypePassword" placeholder="retype your password" required></input>
-                    </fieldset>
+                    <label className="block" htmlFor="retypePassword">Retype Password</label>
+                    <input type="password" id="retypePassword" name="retypePassword" value={form.retypePassword} onChange={handleChange} required />
+                </fieldset>
 
-                    <fieldset>
-                        <legend>Submission</legend>
-                        <input type="submit" value="Register"></input>
-                        <input type="reset" value="Reset Registration Form"></input>
-                    </fieldset>
-                </form>
-            </div>
-        </>
-    )
+                <fieldset>
+                    <button type="submit">Register</button>
+                    <button type="button" onClick={handleReset}>Reset</button>
+                </fieldset>
+            </form>
+        </div>
+    );
 }

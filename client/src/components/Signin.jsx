@@ -33,7 +33,7 @@ export default function Signin() {
                 navigate("/");
 
             } else {
-                const err = await response.json();
+                const error = await response.json();
                 console.error("message:", error);
                 alert("Check your email and password.");
             }
